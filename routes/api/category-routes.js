@@ -40,15 +40,9 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   // create a new category
   // just needs name; a category can have any number of products, including 0
-  // optional productId field, to associate it with a specific product
+  // products will be handled on the product side
   try {
     const categoryData = await Category.create(req.body);
-    if(req.body.productId){
-      const productCheck = await Product.findByPk(req.body.productId);
-      if (productCheck){
-        categoryData.setProduct(productCheck);
-      }
-    }
     res.json(categoryData);
   } catch (error) {
     console.error(error);
@@ -58,8 +52,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   // update a category by its `id` value
-  // can have name (and maybe product?)
-  // optional productId field, to associate it with a specific product
+  // can have name, products will be handled on the product side
   try {
     const categoryData = await Category.update(req.body, {
       where: {
@@ -70,13 +63,6 @@ router.put('/:id', async (req, res) => {
     if (!categoryData){
       res.status(404).json({ message: 'No category found with that id.' });
       return;
-    }
-
-    if(req.body.productId){
-      const productCheck = await Product.findByPk(req.body.productId);
-      if (productCheck){
-        categoryData.setProduct(productCheck);
-      }
     }
 
     res.json(categoryData);
